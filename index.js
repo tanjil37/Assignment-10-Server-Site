@@ -35,7 +35,19 @@ async function run() {
     });
 
    
-    
+    // post method
+    //  insertOne
+    //  insertMany
+
+    app.post("/books", async (req, res) => {
+      const data = req.body;
+      // console.log(data)
+      const result = await bookCollection.insertOne(data);
+      res.send({
+        success: true,
+        result,
+      });
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
