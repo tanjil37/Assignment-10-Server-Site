@@ -34,7 +34,17 @@ async function run() {
       res.send(result);
     });
 
-   
+    app.get('/books/:id', async (req, res) => {
+      const {id}  = req.params;
+      console.log(id);
+      const result = await bookCollection.findOne({_id: new ObjectId(id)})
+
+      res.send({
+        success: true,
+        result
+      }) 
+    });
+
     // post method
     //  insertOne
     //  insertMany
