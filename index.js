@@ -27,6 +27,7 @@ async function run() {
 
     //find
     //findOne
+    //Get all book
     app.get("/books", async (req, res) => {
       const result = await bookCollection.find().toArray();
       //console.log(result)
@@ -34,6 +35,7 @@ async function run() {
       res.send(result);
     });
 
+    //get one book
     app.get('/books/:id', async (req, res) => {
       const {id}  = req.params;
       console.log(id);
@@ -49,6 +51,7 @@ async function run() {
     //  insertOne
     //  insertMany
 
+    //add book
     app.post("/books", async (req, res) => {
       const data = req.body;
       // console.log(data)
@@ -58,6 +61,17 @@ async function run() {
         result,
       });
     });
+
+   
+
+    // ✅ Delete Book
+    app.delete("/books/:id", async (req, res) => {
+      const { id } = req.params;
+      const result = await bookCollection.deleteOne({ _id: new ObjectId(id) });
+      res.send({ success: true, result });
+    });
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
