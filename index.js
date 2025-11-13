@@ -62,41 +62,52 @@ async function run() {
       });
     });
 
-   
-  app.put("/books/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedData = { ...req.body };
+    //My books
 
-    if (!ObjectId.isValid(id)) {
-      return res.status(400).send({ success: false, message: "Invalid ID format" });
-    }
-
-    
-    delete updatedData._id;
-
-    const objectId = new ObjectId(id);
-
-    const result = await bookCollection.updateOne(
-      { _id: objectId },
-      { $set: updatedData }
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).send({ success: false, message: "Book not found" });
-    }
-
-    res.send({
-      success: true,
-      message: "Book updated successfully",
-      result,
+    app.get("/my-books", async (req, res) => {
+      const email = req.query.email;
+      const result = await bookCollection.find({ userEmail: email }).toArray();
+      res.send(result);
     });
-  } catch (error) {
-    console.error("Error updating book:", error);
-    res.status(500).send({ success: false, message: "Internal Server Error" });
-  }
-});
 
+    app.put("/books/:id", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const updatedData = { ...req.body };
+
+        if (!ObjectId.isValid(id)) {
+          return res
+            .status(400)
+            .send({ success: false, message: "Invalid ID format" });
+        }
+
+        delete updatedData._id;
+
+        const objectId = new ObjectId(id);
+
+        const result = await bookCollection.updateOne(
+          { _id: objectId },
+          { $set: updatedData }
+        );
+
+        if (result.matchedCount === 0) {
+          return res
+            .status(404)
+            .send({ success: false, message: "Book not found" });
+        }
+
+        res.send({
+          success: true,
+          message: "Book updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating book:", error);
+        res
+          .status(500)
+          .send({ success: false, message: "Internal Server Error" });
+      }
+    });
 
     //  Delete Book
     app.delete("/books/:id", async (req, res) => {
