@@ -36,15 +36,15 @@ async function run() {
     });
 
     //get one book
-    app.get('/books/:id', async (req, res) => {
-      const {id}  = req.params;
+    app.get("/books/:id", async (req, res) => {
+      const { id } = req.params;
       console.log(id);
-      const result = await bookCollection.findOne({_id: new ObjectId(id)})
+      const result = await bookCollection.findOne({ _id: new ObjectId(id) });
 
       res.send({
         success: true,
-        result
-      }) 
+        result,
+      });
     });
 
     // post method
@@ -63,15 +63,47 @@ async function run() {
     });
 
    
+  app.put("/books/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = { ...req.body };
 
-    // ✅ Delete Book
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).send({ success: false, message: "Invalid ID format" });
+    }
+
+    // ❌ Remove _id if it exists in request body
+    delete updatedData._id;
+
+    const objectId = new ObjectId(id);
+
+    const result = await bookCollection.updateOne(
+      { _id: objectId },
+      { $set: updatedData }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).send({ success: false, message: "Book not found" });
+    }
+
+    res.send({
+      success: true,
+      message: "Book updated successfully",
+      result,
+    });
+  } catch (error) {
+    console.error("Error updating book:", error);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
+});
+
+
+    //  Delete Book
     app.delete("/books/:id", async (req, res) => {
       const { id } = req.params;
       const result = await bookCollection.deleteOne({ _id: new ObjectId(id) });
       res.send({ success: true, result });
     });
-
-
 
     await client.db("admin").command({ ping: 1 });
     console.log(
