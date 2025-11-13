@@ -72,7 +72,7 @@ async function run() {
       return res.status(400).send({ success: false, message: "Invalid ID format" });
     }
 
-    // ❌ Remove _id if it exists in request body
+    
     delete updatedData._id;
 
     const objectId = new ObjectId(id);
